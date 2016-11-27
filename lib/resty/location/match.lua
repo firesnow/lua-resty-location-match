@@ -5,8 +5,6 @@ local _M = {
     _VERSION = '0.01'
 }
 
-
---- 判断请求从哪个location进入
 function _M:match_location(uri, location_match_list)
     local match_regex = false
     local ret, regular_matched, normal_matched
@@ -14,13 +12,13 @@ function _M:match_location(uri, location_match_list)
     local if_match_regular = true
 
     for _, regex in ipairs(location_match_list) do
-        --匹配=
+        --match =
         local regex_equal = re_match(regex, [[^=( *)([\w\-\./]*)$]], "jo")
-        --正则匹配 ~
+        --regex match ~
         local regex_regular = re_match(regex, [[^~( *)([\w\-\./]*)$]], "jo")
-        --正则匹配~*
+        --regex match~*
         local regex_regular_insensitive = re_match(regex, [[^~\*( *)([\w\-\./]*)$]], "jo")
-        --普通匹配^~
+        --normal match ^~
         local regex_not_regular = re_match(regex, [[^\^~( *)([\w\-\./]*)$]], "jo")
 
         if regex_equal then
@@ -41,7 +39,7 @@ function _M:match_location(uri, location_match_list)
                 end
             end
         else
-            --普通匹配 注意区分^~
+            --normal match notice^~
             local normal_len = 0
             if regex_not_regular then
                 ret = re_match(uri, "^" .. regex_not_regular[2] .. "(.*)$", 'jo')
