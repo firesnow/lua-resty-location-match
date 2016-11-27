@@ -2,7 +2,7 @@ local string_len = string.len
 local re_match = ngx.re.match
 
 local _M = {
-    _VERSION = '0.01'
+    _VERSION = '0.02'
 }
 
 function _M:match_location(uri, location_match_list)
