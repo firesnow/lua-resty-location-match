@@ -2,7 +2,7 @@ local string_len = string.len
 local re_match = ngx.re.match
 
 local _M = {
-    _VERSION = '0.02'
+    _VERSION = '0.03'
 }
 
 function _M:match_location(uri, location_match_list)
@@ -50,6 +50,7 @@ function _M:match_location(uri, location_match_list)
             end
             if ret and normal_len > normal_matched_len then
                 normal_matched = regex
+                normal_matched_len = normal_len
                 if_match_regular = regex_not_regular and false or true
             end
         end
