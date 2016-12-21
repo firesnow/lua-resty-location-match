@@ -40,7 +40,7 @@ function _M:match_location(uri, location_match_list)
             end
         else
             --normal match notice^~
-            local normal_len = 0
+            local normal_len
             if regex_not_regular then
                 ret = re_match(uri, "^" .. regex_not_regular[2] .. "(.*)$", 'jo')
                 normal_len = string_len(regex_not_regular[2])
@@ -51,7 +51,7 @@ function _M:match_location(uri, location_match_list)
             if ret and normal_len > normal_matched_len then
                 normal_matched = regex
                 normal_matched_len = normal_len
-                if_match_regular = regex_not_regular and false or true
+                if_match_regular = (regex_not_regular == nil)
             end
         end
     end
@@ -61,7 +61,7 @@ function _M:match_location(uri, location_match_list)
         return match_regex
     end
 
-    if normal_matched and if_match_regular == false then
+    if not if_match_regular then
         return normal_matched
     end
 
