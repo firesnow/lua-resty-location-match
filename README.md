@@ -64,6 +64,8 @@ http {
 ```syntax: match_location = match_location(uri,location_list)```
 
 Get match location from location list as Nginx rules.
+
+**Notice:** Make sure that `location_list` is kept in the same order as location appears in the Nginx's conf.
 ## Copyright and License
 
 This module is licensed under the BSD license.

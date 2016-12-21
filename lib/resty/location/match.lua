@@ -2,78 +2,76 @@ local string_len = string.len
 local re_match = ngx.re.match
 
 local _M = {
-    _VERSION = '0.3.1'
+    _VERSION = '0.3.2'
 }
 
 function _M:match_location(uri, location_match_list)
-    local match_regex = false
-    local ret, regular_matched, normal_matched
+    local equal_matched, uri_match, regex_matched, normal_matched
     local normal_matched_len = 0
     local if_match_regular = true
 
-    for _, regex in ipairs(location_match_list) do
+    for _, rule in ipairs(location_match_list) do
         --match =
-        local regex_equal = re_match(regex, [[^=( *)([\w\-\./]*)$]], "jo")
+        local match_equal = re_match(rule, [[^=( *)([\w\-\./]*)$]], "jo")
         --regex match ~
-        local regex_regular = re_match(regex, [[^~( *)([\w\-\./]*)$]], "jo")
+        local match_regex = re_match(rule, [[^~( *)([\w\-\./]*)$]], "jo")
         --regex match~*
-        local regex_regular_insensitive = re_match(regex, [[^~\*( *)([\w\-\./]*)$]], "jo")
+        local match_regex_insensitive = re_match(rule, [[^~\*( *)([\w\-\./]*)$]], "jo")
         --normal match ^~
-        local regex_not_regular = re_match(regex, [[^\^~( *)([\w\-\./]*)$]], "jo")
+        local match_not_regex = re_match(rule, [[^\^~( *)([\w\-\./]*)$]], "jo")
 
-        if regex_equal then
-            ret = re_match(uri, '^' .. regex_equal[2] .. "$", 'jo')
-            if ret then
-                match_regex = regex
+        if match_equal then
+            uri_match = re_match(uri, '^' .. match_equal[2] .. "$", 'jo')
+            if uri_match then
+                equal_matched = rule
                 break
             end
-        elseif regex_regular or regex_regular_insensitive then
-            if not regular_matched then
-                if regex_regular then
-                    ret = re_match(uri, regex_regular[2], 'jo')
+        elseif match_regex or match_regex_insensitive then
+            if not regex_matched then
+                if match_regex then
+                    uri_match = re_match(uri, match_regex[2], 'jo')
                 else
-                    ret = re_match(uri, regex_regular_insensitive[2], 'joi')
+                    uri_match = re_match(uri, match_regex_insensitive[2], 'joi')
                 end
-                if ret then
-                    regular_matched = regex
+                if uri_match then
+                    regex_matched = rule
                 end
             end
         else
             --normal match notice^~
-            local normal_len = 0
-            if regex_not_regular then
-                ret = re_match(uri, "^" .. regex_not_regular[2] .. "(.*)$", 'jo')
-                normal_len = string_len(regex_not_regular[2])
+            local normal_len
+            if match_not_regex then
+                uri_match = re_match(uri, "^" .. match_not_regex[2] .. "(.*)$", 'jo')
+                normal_len = string_len(match_not_regex[2])
             else
-                ret = re_match(uri, "^" .. regex .. "(.*)$", 'jo')
-                normal_len = string_len(regex)
+                uri_match = re_match(uri, "^" .. rule .. "(.*)$", 'jo')
+                normal_len = string_len(rule)
             end
-            if ret and normal_len > normal_matched_len then
-                normal_matched = regex
+            if uri_match and normal_len > normal_matched_len then
+                normal_matched = rule
                 normal_matched_len = normal_len
-                if_match_regular = (regex_not_regular and {false} or {true})[1]
+                if_match_regular = (match_not_regex == nil)
             end
         end
     end
 
 
-    if match_regex then
-        return match_regex
+    if equal_matched then
+        return equal_matched
     end
 
-    if normal_matched and if_match_regular == false then
+    if not if_match_regular then
         return normal_matched
     end
 
-    if regular_matched then
-        return regular_matched
+    if regex_matched then
+        return regex_matched
     elseif normal_matched then
         return normal_matched
     end
 
-    return match_regex
+    return equal_matched
 end
-
 
 
 return _M
