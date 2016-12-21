@@ -58,6 +58,12 @@ http {
 }
 ```
 
+## Methods
+
+### match_location
+```syntax: match_location = match_location(uri,location_list)```
+
+Get match location from location list as Nginx rules.
 ## Copyright and License
 
 This module is licensed under the BSD license.
