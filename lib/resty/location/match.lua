@@ -51,7 +51,7 @@ function _M:match_location(uri, location_match_list)
             if ret and normal_len > normal_matched_len then
                 normal_matched = regex
                 normal_matched_len = normal_len
-                if_match_regular = regex_not_regular and false or true
+                if_match_regular = (regex_not_regular and {false} or {true})[1]
             end
         end
     end
